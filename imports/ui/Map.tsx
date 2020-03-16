@@ -8,7 +8,11 @@ export default class Map extends React.Component {
     }
 
     componentDidMount() {
-        setupMap(this.mapRef.current)
+
+    navigator.geolocation.getCurrentPosition((position) => {
+        setupMap(this.mapRef.current, position)
+    });
+       
     }
 
     render() {

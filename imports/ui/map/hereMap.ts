@@ -1,45 +1,55 @@
-const { H } = window
+const { H } = window;
 
 export const platform = new H.service.Platform({
-    apikey: 'yXnArMUy4IlPMMMdSc84FxFFd6XGPED0XqrApbEBek8'
-})
+  apikey: "yXnArMUy4IlPMMMdSc84FxFFd6XGPED0XqrApbEBek8"
+});
 
-let map
+
+let map;
 
 export const getMap = () => {
-    if (!map) throw new Error('Map not setup!')
+  if (!map) throw new Error("Map not setup!");
 
-    return map
-}
+  return map;
+};
 
-export const setupMap = mapRef => {
-    if (map) return map
+export const setupMap = (mapRef, position) => {
+  if (map) return map;
 
-    const defaultLayers = platform.createDefaultLayers()
+  const defaultLayers = platform.createDefaultLayers();
 
-    // FIXME ask browser for current location and automatically center map as done in LocationStep (reuse code in here)
-    map = new H.Map(
-        mapRef,
-        defaultLayers.vector.normal.map,
-        {
-            zoom: 4,
-            center: { lat: 20.20, lng: 100.71 }
-        })
 
-    window.addEventListener('resize', function () {
-        map.getViewPort().resize()
-    })
 
-    //const behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map))
-    //const ui = H.ui.UI.createDefault(map, defaultLayers)
+  var berlinMarker = new H.map.Marker({
+    lat: position.coords.latitude,
+    lng:position.coords.longitude
+  });
 
-    return map
-}
+
+  map = new H.Map(mapRef, defaultLayers.vector.normal.map, {
+    zoom: 10,
+    center: { lat: position.coords.latitude, lng: position.coords.longitude }
+  });
+
+  map.addObject(berlinMarker);
+
+  window.addEventListener("resize", function() {
+    map.getViewPort().resize();
+  });
+  // FIXME ask browser for current location and automatically center map as done in LocationStep (reuse code in here)
+
+ 
+
+  //const behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map))
+  //const ui = H.ui.UI.createDefault(map, defaultLayers)
+
+  return map;
+};
 
 export const search = (query: string) => {
-    const geocoder = platform.getGeocodingService()
+  const geocoder = platform.getGeocodingService();
 
-    return new Promise((resolve, reject) => {
-        geocoder.geocode({ searchText: query, jsonattributes: 1 }, resolve, reject)
-    })
-}
+  return new Promise((resolve, reject) => {
+    geocoder.geocode({ searchText: query, jsonattributes: 1 }, resolve, reject);
+  });
+};
